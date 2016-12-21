@@ -1,0 +1,34 @@
+//
+   Created by kishore.relangi on 8/11/2014.
+
+doctype html
+html(lang="en")
+    body
+        h4(style='font-family: Cambria,Times New Roman,verdana,arial,sans-serif;')= ReportHeading
+        p= Message
+        table(style='font-family: verdana,arial,sans-serif;font-size:9px;color:#333333;border-width: 1px;border-color: #666666;border-collapse: collapse;')
+            thead(style='font-family: verdana,arial,sans-serif;font-size:11px;color:#333333;border-width: 1px;border-color: #666666;border-collapse: collapse;')
+                - each tr in Cols
+                    tr
+                        - each thval in tr
+                            - var rowSpan = thval.rowSpan || 1;
+                            - var colSpan = thval.colSpan || 1;
+                            - var val = thval.value;
+                            th(rowspan='#{rowSpan}', colspan='#{colSpan}', style='border-width: 1px;border-style: solid;border-color: #666666;color:#fff;height : 20px;padding : 0px 8px 0px 8px;background-color: RGB(83,142,213);') #{val}
+            tbody
+                - each trdata in Rows
+                    tr
+                        - each thval in trdata
+                            - var rowSpan = thval.rowSpan || 1;
+                            - var colSpan = thval.colSpan || 1;
+                            - var val = thval.value;
+                            - var colname = thval.colname
+                            - var cnd_color = 'border-width: 1px;border-style: solid;border-color: #666666;padding : 3px 8px 3px 8px;height : 20px;background-color: #ffffff;';
+                            - if (CFS[colname] !== undefined)
+                                - cnd_color = 'border-width: 1px;border-style: solid;border-color: #666666;padding : 3px 8px 3px 8px;height : 20px; color:white; background-color:';
+                                - each o, v  in CFS[colname]
+                                    - if (v == 'gt' && (val > o.th))
+                                        - cnd_color += o.frmt + ';';
+                                    - else if (v == 'lt' && (val < o.th))
+                                        - cnd_color += o.frmt + ';';
+                            td(rowspan='#{rowSpan}', colspan='#{colSpan}', style='#{cnd_color}') #{val}
