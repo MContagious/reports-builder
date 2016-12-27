@@ -1,4 +1,6 @@
-import { Database, QueryResults } from 'sql.js';
+// import { Database, QueryResults } from 'sql.js';
+import { Database } from "sqlite3";
+
 import { format } from 'mysql';
 
 export class MemDB {
@@ -11,6 +13,7 @@ export class MemDB {
     }
     async createTable() {
         let sql_stmt = `Create Table ${this.tableName} ( ${this.cols.join(',')} )`;
+        console.log(sql_stmt);
         this.memdb.exec(sql_stmt);
     }
     async insertRows(rows: Array<Object>) {
@@ -22,26 +25,21 @@ export class MemDB {
         }).join('; \n');
         this.memdb.exec(values);
     }
-    async getRows(sql?:string) {
+    async getRows(sql?:string):Promise<{}[]> {
         if (sql) {
             sql = sql.replace(/ Results\s*/i, ` ${this.tableName} `);
         } else {
             sql = `Select * from ${this.tableName}`;
         }
         console.log(sql);
-        try {
-            let rows:QueryResults = this.memdb.exec(sql)[0];
-
-            return rows.values.map((row) => {
-                let res = {};
-                for (let i=0; i<this.cols.length; i++) {
-                    res[this.cols[i]] = row[i];
+        return new Promise<{}[]>((resolve, reject) => {
+            this.memdb.all(sql, (err, rows) => {
+                if (err) {
+                    reject(err);
                 }
-                return res;
+                resolve(rows);   
             });
-        } catch(er) {
-            throw er;
-        }
+        });
     }
     async getColumns () {
         return this.cols;
